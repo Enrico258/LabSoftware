@@ -1,4 +1,4 @@
-from busca.buscaPonto import somar, subtrair
+from busca.buscaPonto import buscarPontos
 
 def test_somar():
-    assert somar(2, 3) == 5
+    assert buscarPontos("papel") == ['R. Bairi, 435', 'Rua Anita Garibaldi, 30']
