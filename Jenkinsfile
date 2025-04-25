@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        FIREBASE_KEY = credentials('chave')
+    }
+
     stages {
         stage('Clonar repositório') {
             steps {
@@ -11,6 +15,12 @@ pipeline {
         stage('Instalar dependências') {
             steps {
                 sh 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Copiar chave Firebase') {
+            steps {
+                sh 'cp "$FIREBASE_KEY" chave.json'
             }
         }
 
