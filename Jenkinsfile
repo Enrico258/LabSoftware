@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        FIREBASE_KEY = credentials('chave')
+        FIREBASE_KEY = credentials('chave') 
     }
 
     stages {
@@ -14,7 +14,8 @@ pipeline {
 
         stage('Instalar dependências') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh 'python3 -m venv venv'
+                sh '. venv/bin/activate && pip install -r requirements.txt'
             }
         }
 
@@ -26,7 +27,7 @@ pipeline {
 
         stage('Rodar testes') {
             steps {
-                sh 'PYTHONPATH=src pytest tests'
+                sh '. venv/bin/activate && PYTHONPATH=src pytest tests'
             }
         }
     }
