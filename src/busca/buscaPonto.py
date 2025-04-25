@@ -2,8 +2,7 @@ import sys
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-caminho = sys.argv[0]
-print(caminho)
+caminho = os.environ.get("FIREBASE_KEY_PATH")
 cred = credentials.Certificate(caminho)
 firebase_admin.initialize_app(cred)
 
