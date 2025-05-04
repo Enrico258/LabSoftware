@@ -12,7 +12,7 @@
                 v-model="residuo"
                 @keyup.enter="Buscar"
                 style="width: 400px; padding: 10px; font-size: 1rem; border: 2px solid #ccc; border-radius: 8px; text-align: left; font-weight: bold; color: #555;"
-            />
+            /> 
 
             <img 
                 :src="require('@/assets/busca.png')" 
