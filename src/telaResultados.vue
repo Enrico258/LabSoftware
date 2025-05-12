@@ -15,10 +15,27 @@
         style="width: 24px; cursor: pointer;" 
         @click="Buscar"
       />
+      
     </div>
 
+    <div style="margin-top: 80px; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; align-items: center">
+      <span 
+        v-for="(busca, index) in procurados" 
+        :key="index" 
+        style="background-color: #e0f7fa; border-radius: 20px; font-family: 'Arial', sans-serif; padding: 8px 16px; font-size: 0.9rem; font-weight: bold; color: #00796b; display: inline-flex; align-items: center; gap: 8px"
+      >
+        {{ busca }}
+        <img 
+          :src="require('@/assets/X.png')" 
+          style="width: 16px; height: 16px; cursor: pointer;" 
+          @click="Remover(index)"
+        />
+      </span>
+    </div>
+
+
     <div
-      style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; position: relative; margin-top: 100px;"
+      style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; position: relative; margin-top: 70px;"
     >
       <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
         <img :src="require('@/assets/instru.png')" style="width: 120px;" />
@@ -38,6 +55,7 @@
             v-for="(local, index) in locais"
             :key="index"
             :position="local"
+            :title="local.descricao"
             @click="abrirGoogleMaps(local)"
 
           />
@@ -84,32 +102,45 @@
           residuo: '',
           instru: '',
           locais: [],
-          mapCenter: {lat: -23.5505, lng: -46.6333}
+          procurados: [],
+          mapCenter: {lat: -23.5505, lng: -46.6333},
         };
       },
       methods: {
-        async Buscar() {
+        async Remover(index) {
           try {
             const q = query(
               collection(db, 'residuos'), 
-              where('nome', '==', this.residuo)
+              where('nome', '==', this.procurados[index])
             );
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
               const docSnap = querySnapshot.docs[0];
               const docData = docSnap.data();
-              console.log('Locais recebidos do Firebase:', docData.locais);
 
-              this.instru = docData.instru || 'Nenhuma instrução encontrada.';
-              this.locais = (docData.locais || []).map(p => ({
+              // this.instru = docData.instru || 'Nenhuma instrução encontrada.';
+              const removeLocais = (docData.locais || []).map(p => ({
                 lat: p.latitude,
                 lng: p.longitude
               }));
-              if (this.locais.length > 0) {
-                this.mapCenter = this.locais[0];
-              }
 
+              removeLocais.forEach(novo => {
+                const existe = this.locais.some(
+                  l => l.lat === novo.lat && l.lng === novo.lng
+                );
+                if (existe) {
+                  this.locais.splice(novo, 1);
+                }
+              });
+
+              // if (this.locais.length === removeLocais.length && removeLocais.length > 0) {
+              //   this.mapCenter = removeLocais[0];
+              // }
+
+              // if (this.locais.length > 0) {
+              //   this.mapCenter = this.locais[0];
+              // }
 
             } else {
               this.instru = 'Nenhum resultado encontrado.';
@@ -119,8 +150,62 @@
             console.error('Erro ao buscar instruções:', error);
             this.instru = 'Erro ao buscar dados.';
           }
+          this.procurados.splice(index, 1);
         },
-        
+
+        async Buscar() {
+          const termo = this.residuo.trim();
+          if (!termo || this.procurados.length == 3) return;
+
+          if (!this.procurados.includes(termo)) {
+            this.procurados.push(termo);
+          }
+
+          try {
+            const q = query(
+              collection(db, 'residuos'), 
+              where('nome', '==', this.residuo)
+            );
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+              console.log(this.procurados.length)
+              const docSnap = querySnapshot.docs[0];
+              const docData = docSnap.data();
+
+              this.instru = docData.instru || 'Nenhuma instrução encontrada.';
+              const novosLocais = (docData.locais || []).map((p, i) => ({
+                lat: p.latitude,
+                lng: p.longitude,
+                descricao: (docData.infoLocais || [])[i] || 'Sem descrição'
+              }));
+
+              novosLocais.forEach(novo => {
+                const existe = this.locais.some(
+                  l => l.lat === novo.lat && l.lng === novo.lng
+                );
+                if (!existe) {
+                  this.locais.push(novo);
+                }
+              });
+
+              if (this.locais.length === novosLocais.length && novosLocais.length > 0) {
+                this.mapCenter = novosLocais[0];
+              }
+
+              if (this.locais.length > 0) {
+                this.mapCenter = this.locais[0];
+              }
+            } else {
+              this.instru = 'Nenhum resultado encontrado.';
+              this.locais = [];
+            }
+          } catch (error) {
+            console.error('Erro ao buscar instruções:', error);
+            this.instru = 'Erro ao buscar dados.';
+          }
+          this.residuo = '';
+        },
         abrirGoogleMaps(local) {
           const url = `https://www.google.com/maps/dir/?api=1&destination=${local.lat},${local.lng}`;
           window.open(url, '_blank');
