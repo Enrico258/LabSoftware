@@ -119,7 +119,6 @@
               const docSnap = querySnapshot.docs[0];
               const docData = docSnap.data();
 
-              // this.instru = docData.instru || 'Nenhuma instrução encontrada.';
               const removeLocais = (docData.locais || []).map(p => ({
                 lat: p.latitude,
                 lng: p.longitude
@@ -134,14 +133,37 @@
                 }
               });
 
-              // if (this.locais.length === removeLocais.length && removeLocais.length > 0) {
-              //   this.mapCenter = removeLocais[0];
-              // }
-
-              // if (this.locais.length > 0) {
-              //   this.mapCenter = this.locais[0];
-              // }
-
+              this.procurados.splice(index, 1);
+              if (this.procurados.length == 1) {
+                const q = query(
+                  collection(db, 'residuos'), 
+                  where('nome', '==', this.procurados[0])
+                );
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                  const docSnap = querySnapshot.docs[0];
+                  const docData = docSnap.data();
+                  this.instru = docData.instru || 'Nenhuma instrução encontrada.';
+                }
+              } else {
+                const apiKey = process.env.VUE_APP_GPT_API_KEY;
+                const endpoint = "https://api.openai.com/v1/chat/completions";
+                const resposta = await fetch(endpoint, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`
+                  },
+                  body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    messages: [
+                      { role: "user", content: "Dê instruções basicas de descarte para os seguintes materias em poucos tópicos:" + this.procurados }
+                    ]
+                  })
+                });
+                const data = await resposta.json();
+                this.instru = (data.choices[0].message.content);
+              }
             } else {
               this.instru = 'Nenhum resultado encontrado.';
               this.locais = [];
@@ -150,7 +172,6 @@
             console.error('Erro ao buscar instruções:', error);
             this.instru = 'Erro ao buscar dados.';
           }
-          this.procurados.splice(index, 1);
         },
 
         async Buscar() {
@@ -172,8 +193,28 @@
               console.log(this.procurados.length)
               const docSnap = querySnapshot.docs[0];
               const docData = docSnap.data();
+              if (this.procurados.length == 1) {
+                this.instru = docData.instru || 'Nenhuma instrução encontrada.';
+              } else {
+                const apiKey = process.env.VUE_APP_GPT_API_KEY;
+                const endpoint = "https://api.openai.com/v1/chat/completions";
+                const resposta = await fetch(endpoint, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`
+                  },
+                  body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    messages: [
+                      { role: "user", content: "Dê instruções basicas de descarte para os seguintes materias em poucos tópicos:" + this.procurados }
+                    ]
+                  })
+                });
 
-              this.instru = docData.instru || 'Nenhuma instrução encontrada.';
+                const data = await resposta.json();
+                this.instru = (data.choices[0].message.content);
+              }
               const novosLocais = (docData.locais || []).map((p, i) => ({
                 lat: p.latitude,
                 lng: p.longitude,
