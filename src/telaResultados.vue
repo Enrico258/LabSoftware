@@ -134,7 +134,10 @@
               });
 
               this.procurados.splice(index, 1);
-              if (this.procurados.length == 1) {
+              if (this.procurados.length == 0) {
+                this.instru = "Nenhum material inserido"
+              } 
+              else if (this.procurados.length == 1) {
                 const q = query(
                   collection(db, 'residuos'), 
                   where('nome', '==', this.procurados[0])
@@ -193,7 +196,10 @@
               console.log(this.procurados.length)
               const docSnap = querySnapshot.docs[0];
               const docData = docSnap.data();
-              if (this.procurados.length == 1) {
+              if (this.procurados.length == 0) {
+                this.instru = "Nenhum material inserido"
+              } 
+              else if (this.procurados.length == 1) {
                 this.instru = docData.instru || 'Nenhuma instrução encontrada.';
               } else {
                 const apiKey = process.env.VUE_APP_GPT_API_KEY;
@@ -215,6 +221,7 @@
                 const data = await resposta.json();
                 this.instru = (data.choices[0].message.content);
               }
+              
               const novosLocais = (docData.locais || []).map((p, i) => ({
                 lat: p.latitude,
                 lng: p.longitude,

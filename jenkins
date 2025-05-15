@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/Enrico258/LabSoftware.git'
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Run function') {
+            steps {
+                sh 'node caminho/para/seu/script.js'
+            }
+        }
+    }
+}
