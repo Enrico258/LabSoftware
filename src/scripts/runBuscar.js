@@ -1,4 +1,4 @@
-import { buscaPontos } from "../utils/buscaPontos.js";
+import { buscaPontos } from "../utils/buscaPontos.mjs";
 import dotenv from "dotenv";
 dotenv.config();
 

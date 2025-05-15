@@ -91,7 +91,7 @@
     import { collection, query, where, getDocs } from 'firebase/firestore';
     import { db } from '@/firebase'; 
     import { GMapMap, GMapMarker } from '@fawmi/vue-google-maps';
-    import { buscaPontos } from '@/utils/buscaPontos.js';
+    import { buscaPontos } from '@/utils/buscaPontos.mjs';
 
     export default {
       components: {
