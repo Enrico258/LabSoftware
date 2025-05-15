@@ -1,5 +1,6 @@
 import { buscaPontos } from "../utils/buscaPontos.mjs";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const residuo = process.argv[2] || "papel";
