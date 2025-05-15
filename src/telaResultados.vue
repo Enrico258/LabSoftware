@@ -245,7 +245,7 @@
                 this.mapCenter = this.locais[0];
               }
             } else {
-              this.instru = 'Nenhum resultado encontrado.';
+              this.instru = 'Nenhum resultado encontrado. ';
               this.locais = [];
             }
           } catch (error) {
