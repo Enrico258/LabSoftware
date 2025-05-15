@@ -187,83 +187,83 @@
           }
         },
 
-        async Buscar() {
-          const termo = this.residuo.trim();
-          if (!termo || this.procurados.length == 3) return;
+        // async Buscar() {
+        //   const termo = this.residuo.trim();
+        //   if (!termo || this.procurados.length == 3) return;
 
-          if (!this.procurados.includes(termo)) {
-            this.procurados.push(termo);
-          }
+        //   if (!this.procurados.includes(termo)) {
+        //     this.procurados.push(termo);
+        //   }
 
-          try {
-            const q = query(
-              collection(db, 'residuos'), 
-              where('nome', '==', this.residuo)
-            );
-            const querySnapshot = await getDocs(q);
+        //   try {
+        //     const q = query(
+        //       collection(db, 'residuos'), 
+        //       where('nome', '==', this.residuo)
+        //     );
+        //     const querySnapshot = await getDocs(q);
 
-            if (!querySnapshot.empty) {
-              const docSnap = querySnapshot.docs[0];
-              const docData = docSnap.data();
+        //     if (!querySnapshot.empty) {
+        //       const docSnap = querySnapshot.docs[0];
+        //       const docData = docSnap.data();
               
-              if (this.procurados.length == 0) {
-                this.instru = "Nenhum material inserido"
-              } 
-              else if (this.procurados.length == 1) {
-                this.instru = docData.instru || 'Nenhuma instrução encontrada.';
-              } else {
-                const apiKey = process.env.VUE_APP_GPT_API_KEY;
-                const endpoint = "https://api.openai.com/v1/chat/completions";
-                const resposta = await fetch(endpoint, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${apiKey}`
-                  },
-                  body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
-                    messages: [
-                      { role: "user", content: "Dê instruções basicas de descarte para os seguintes materias em poucos tópicos:" + this.procurados }
-                    ]
-                  })
-                });
+        //       if (this.procurados.length == 0) {
+        //         this.instru = "Nenhum material inserido"
+        //       } 
+        //       else if (this.procurados.length == 1) {
+        //         this.instru = docData.instru || 'Nenhuma instrução encontrada.';
+        //       } else {
+        //         const apiKey = process.env.VUE_APP_GPT_API_KEY;
+        //         const endpoint = "https://api.openai.com/v1/chat/completions";
+        //         const resposta = await fetch(endpoint, {
+        //           method: "POST",
+        //           headers: {
+        //             "Content-Type": "application/json",
+        //             "Authorization": `Bearer ${apiKey}`
+        //           },
+        //           body: JSON.stringify({
+        //             model: "gpt-3.5-turbo",
+        //             messages: [
+        //               { role: "user", content: "Dê instruções basicas de descarte para os seguintes materias em poucos tópicos:" + this.procurados }
+        //             ]
+        //           })
+        //         });
 
-                const data = await resposta.json();
-                this.instru = (data.choices[0].message.content);
-              }
+        //         const data = await resposta.json();
+        //         this.instru = (data.choices[0].message.content);
+        //       }
               
-              const novosLocais = (docData.locais || []).map((p, i) => ({
-                lat: p.latitude,
-                lng: p.longitude,
-                descricao: (docData.infoLocais || [])[i] || 'Sem descrição'
-              }));
+        //       const novosLocais = (docData.locais || []).map((p, i) => ({
+        //         lat: p.latitude,
+        //         lng: p.longitude,
+        //         descricao: (docData.infoLocais || [])[i] || 'Sem descrição'
+        //       }));
 
-              novosLocais.forEach(novo => {
-                const existe = this.locais.some(
-                  l => l.lat === novo.lat && l.lng === novo.lng
-                );
-                if (!existe) {
-                  this.locais.push(novo);
-                }
-              });
+        //       novosLocais.forEach(novo => {
+        //         const existe = this.locais.some(
+        //           l => l.lat === novo.lat && l.lng === novo.lng
+        //         );
+        //         if (!existe) {
+        //           this.locais.push(novo);
+        //         }
+        //       });
 
-              if (this.locais.length === novosLocais.length && novosLocais.length > 0) {
-                this.mapCenter = novosLocais[0];
-              }
+        //       if (this.locais.length === novosLocais.length && novosLocais.length > 0) {
+        //         this.mapCenter = novosLocais[0];
+        //       }
 
-              if (this.locais.length > 0) {
-                this.mapCenter = this.locais[0];
-              }
-            } else {
-              this.instru = 'Nenhum resultado encontrado. ';
-              this.locais = [];
-            }
-          } catch (error) {
-            console.error('Erro ao buscar instruções:', error);
-            this.instru = 'Erro ao buscar dados.';
-          }
-          this.residuo = '';
-        },
+        //       if (this.locais.length > 0) {
+        //         this.mapCenter = this.locais[0];
+        //       }
+        //     } else {
+        //       this.instru = 'Nenhum resultado encontrado. ';
+        //       this.locais = [];
+        //     }
+        //   } catch (error) {
+        //     console.error('Erro ao buscar instruções:', error);
+        //     this.instru = 'Erro ao buscar dados.';
+        //   }
+        //   this.residuo = '';
+        // },
         
         abrirGoogleMaps(local) {
           const url = `https://www.google.com/maps/dir/?api=1&destination=${local.lat},${local.lng}`;
@@ -275,7 +275,7 @@
         const pesquisa = this.$route.query.q;
         if (pesquisa) {
           this.residuo = pesquisa;
-          this.Buscar();
+          this.BuscaPontos();
         }
       },
     };
