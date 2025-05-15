@@ -7,13 +7,13 @@
         type="text"
         placeholder="Escreva aqui o resíduo que deseja descartar"
         v-model="residuo"
-        @keyup.enter="Buscar"
+        @keyup.enter="BuscaPontos"
         style="width: 400px; padding: 10px; font-size: 1rem; border: 2px solid #ccc; border-radius: 8px; text-align: left; font-weight: bold; color: #555;"
       />
       <img 
         :src="require('@/assets/busca.png')" 
         style="width: 24px; cursor: pointer;" 
-        @click="Buscar"
+        @click="BuscaPontos"
       />
       
     </div>
@@ -91,6 +91,7 @@
     import { collection, query, where, getDocs } from 'firebase/firestore';
     import { db } from '@/firebase'; 
     import { GMapMap, GMapMarker } from '@fawmi/vue-google-maps';
+    import { buscaPontos } from '@/utils/buscaPontos.js';
 
     export default {
       components: {
@@ -107,6 +108,15 @@
         };
       },
       methods: {
+        async BuscaPontos() {
+          const resultado = await buscaPontos(this.residuo, this.procurados);
+          this.instru = resultado.instru;
+          this.locais = [...this.locais, ...resultado.locais];
+          this.mapCenter = resultado.mapCenter;
+          this.residuo = '';
+          this.procurados = resultado.novosProcurados;
+        },
+
         async Remover(index) {
           try {
             const q = query(
@@ -193,9 +203,9 @@
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
-              console.log(this.procurados.length)
               const docSnap = querySnapshot.docs[0];
               const docData = docSnap.data();
+              
               if (this.procurados.length == 0) {
                 this.instru = "Nenhum material inserido"
               } 
@@ -254,6 +264,7 @@
           }
           this.residuo = '';
         },
+        
         abrirGoogleMaps(local) {
           const url = `https://www.google.com/maps/dir/?api=1&destination=${local.lat},${local.lng}`;
           window.open(url, '_blank');
