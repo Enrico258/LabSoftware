@@ -31,3 +31,4 @@ buscaPontos(residuo, procurados).then(result => {
 });
 
 
+process.exit(0);
