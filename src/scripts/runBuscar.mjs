@@ -26,7 +26,7 @@ const esperado = [
 
 
 buscaPontos(residuo, procurados).then(result => {
-  assert.deepStrictEqual(resultado.locais, esperado);
+  assert.deepStrictEqual(result.locais, esperado);
   console.log("✅ Teste passou: locais estão corretos.");
 });
 
