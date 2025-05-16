@@ -1,6 +1,6 @@
 import { collection, query, where, getDocs } from "firebase/firestore";
 import fetch from "node-fetch"; 
-import { db } from '../firebase'; 
+import { db } from '../firebase.js'; 
 
 export async function buscaPontos(residuo, procurados = []) {
   const termo = residuo.trim();
