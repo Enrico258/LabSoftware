@@ -32,8 +32,6 @@
         />
       </span>
     </div>
-
-
     <div
       style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; position: relative; margin-top: 70px;"
     >
@@ -62,29 +60,23 @@
         </GMapMap>
       </div>
     </div>
-
-
     <img 
       :src="require('@/assets/folha-direita-cima.png')" 
       style="position: fixed; top: 0; right: 0; width: 150px;" 
     />
-
     <img
       :src="require('@/assets/folha-esquerda-baixo.png')"
       style="position: fixed; top: 0; left: 0; width: 150px; transform: rotate(90deg) translateX(-20px);"
     />
-
     <img
       :src="require('@/assets/lixeira.png')"
       style="position: fixed; bottom: 0; right: 0; width: 150px; transform: translateY(5px);"
     />
-
     <img 
       :src="require('@/assets/EcoMapLogo.png')" 
       style="position: fixed ; bottom: 0; left: 0; width: 200px; transform: translateX(10px) translateY(-5px); cursor: pointer; " 
       @click="$router.push({ name: 'TelaBusca' })"
     />
-
   </template>
   
   <script>
