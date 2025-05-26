@@ -79,7 +79,7 @@
     />
   </template>
   
-  <script>
+<script>
     import { collection, query, where, getDocs } from 'firebase/firestore';
     import { db } from '@/firebase'; 
     import { GMapMap, GMapMarker } from '@fawmi/vue-google-maps';
